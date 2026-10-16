@@ -4,7 +4,7 @@ Stack: Next.js 14 (App Router, TypeScript), Neon PostgreSQL, Finnhub, Yahoo Fina
 
 ## 1. Run locally
 
-Requirements: Node.js 20.6 or newer and npm.
+Requirements: Node.js 20.6 or newer (npm is included) and Git. Download both from nodejs.org and git-scm.com.
 
 ```bash
 npm install
@@ -65,13 +65,13 @@ Optional: `GEMINI_MODEL` to override the default `gemini-3.8-flash`.
 
 If you change environment variables after deploying, redeploy for them to take effect.
 
-## 3. Security notes
+## 4. Security notes
 
 - `.env.local` is git-ignored. Only `.env.example` (no secrets) is committed.
 - **Rotate keys that have been shared in chat or tickets.** Regenerate the Finnhub key, Gemini key and Neon password if they were exposed anywhere, then update `.env.local` and Vercel.
 - MarketGazette is a single-user app with no login. Anyone who knows the deployed URL can read and change the watchlist, vault and notes, and can trigger Gemini calls on your quota. Keep the URL private, or enable Vercel Deployment Protection (Project Settings, Deployment Protection) before sharing it.
 
-## 4. Troubleshooting
+## 5. Troubleshooting
 
 - **Empty news**: check `FINNHUB_API_KEY`; Yahoo RSS is used as a second source and the Neon cache as a fallback.
 - **AI errors**: check `GEMINI_API_KEY` and that your key can use the configured model (set `GEMINI_MODEL`).
