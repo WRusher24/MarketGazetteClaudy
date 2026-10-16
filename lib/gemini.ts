@@ -8,7 +8,7 @@ const PER_ATTEMPT_MS = 30_000;
 
 function modelList(): string[] {
   const configured = process.env.GEMINI_MODEL;
-  const defaults = ['gemini-3.8-flash', 'gemini-2.5-flash'];
+  const defaults = ['gemini-3.8-flash'];
   return configured ? [configured, ...defaults.filter((m) => m !== configured)] : defaults;
 }
 
@@ -29,7 +29,7 @@ export async function geminiJson<T>(prompt: string, temperature = 0.3): Promise<
   if (!key) throw new Error('GEMINI_API_KEY is not set');
 
   const deadline = Date.now() + TOTAL_BUDGET_MS;
-  let lastError = 'Gemini request failed';
+  const errors: string[] = [];
 
   for (const model of modelList()) {
     const remaining = deadline - Date.now();
@@ -47,21 +47,22 @@ export async function geminiJson<T>(prompt: string, temperature = 0.3): Promise<
         signal: AbortSignal.timeout(Math.min(PER_ATTEMPT_MS, remaining)),
       });
     } catch (e) {
-      lastError = `Gemini ${model} did not respond in time (${e instanceof Error ? e.name : 'network error'})`;
+      errors.push(`Gemini ${model} did not respond in time (${e instanceof Error ? e.name : 'network error'})`);
       continue;
     }
 
     if (!res.ok) {
       const detail = await errorDetail(res);
-      lastError = `Gemini ${model} responded ${res.status}${detail ? `: ${detail}` : ''}`;
+      const message = `Gemini ${model} responded ${res.status}${detail ? `: ${detail}` : ''}`;
+      errors.push(message);
 
       // A rejected key will fail on every model, so stop and say so instead of trying the next one.
       const badKey = res.status === 401 || res.status === 403 || /api key/i.test(detail);
-      if (badKey) throw new Error(`Gemini rejected GEMINI_API_KEY. ${lastError}`);
+      if (badKey) throw new Error(`Gemini rejected GEMINI_API_KEY. ${message}`);
 
       // Model missing, bad request for this model, quota/rate limit (per-model), or server trouble: try the next model.
       if ([400, 404, 429, 500, 503].includes(res.status)) continue;
-      throw new Error(lastError);
+      throw new Error(errors.join(' | '));
     }
 
     const json = await res.json();
@@ -69,17 +70,17 @@ export async function geminiJson<T>(prompt: string, temperature = 0.3): Promise<
     const text = parts.map((p) => p.text ?? '').join('').trim();
     if (!text) {
       const reason = json?.promptFeedback?.blockReason ?? json?.candidates?.[0]?.finishReason;
-      lastError = `Gemini ${model} returned an empty response${reason ? ` (${reason})` : ''}`;
+      errors.push(`Gemini ${model} returned an empty response${reason ? ` (${reason})` : ''}`);
       continue;
     }
     const unfenced = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
     try {
       return JSON.parse(unfenced) as T;
     } catch {
-      lastError = `Gemini ${model} returned malformed JSON`;
+      errors.push(`Gemini ${model} returned malformed JSON`);
     }
   }
-  throw new Error(lastError);
+  throw new Error(errors.join(' | ') || 'Gemini request failed');
 }
 
 /** Read-through cache for AI output, stored in Neon. */
