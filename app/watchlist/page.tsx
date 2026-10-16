@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { ReportBody } from '@/components/AnalystPanel';
 import Icon from '@/components/Icon';
+import EarningsCalendar from '@/components/EarningsCalendar';
+import ListManager from '@/components/ListManager';
 import { useReader, useStore } from '@/components/Providers';
 import SymbolSearch from '@/components/SymbolSearch';
 import WatchTable from '@/components/WatchTable';
@@ -97,9 +99,11 @@ function AllNotes() {
 }
 
 export default function WatchlistPage() {
-  const { addSymbol, bookmarks } = useStore();
+  const { lists, addSymbol, bookmarks } = useStore();
   const [tab, setTab] = useState<Tab>('tickers');
+  const [activeId, setActiveId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const active = lists.find((l) => l.id === (activeId ?? lists[0]?.id)) ?? null;
 
   return (
     <div className="page">
@@ -117,17 +121,27 @@ export default function WatchlistPage() {
       </div>
 
       {tab === 'tickers' && (
-        <section className="card">
-          <div className="section-head">
-            <h2>My Tickers</h2>
-            <SymbolSearch
-              placeholder="Add a ticker"
-              onPick={(s) => addSymbol(s).then(() => setError(null)).catch((e) => setError(e instanceof Error ? e.message : 'Could not add'))}
-            />
-          </div>
-          {error && <p className="error">{error}</p>}
-          <WatchTable editable />
-        </section>
+        <>
+          <section className="card">
+            <div className="section-head">
+              <h2>{active ? active.name : 'My Tickers'}</h2>
+              <SymbolSearch
+                placeholder={active ? `Add to ${active.name}` : 'Add a ticker'}
+                onPick={(s) =>
+                  addSymbol(s, active?.id)
+                    .then(() => setError(null))
+                    .catch((e) => setError(e instanceof Error ? e.message : 'Could not add'))
+                }
+              />
+            </div>
+            <ListManager activeId={active?.id ?? null} onSelect={setActiveId} />
+            {error && <p className="error">{error}</p>}
+            <div className="list-table">
+              <WatchTable editable listId={active?.id} />
+            </div>
+          </section>
+          <EarningsCalendar symbols={active?.symbols ?? []} title={`Earnings: ${active?.name ?? 'Watchlist'}`} />
+        </>
       )}
       {tab === 'vault' && <Vault />}
       {tab === 'notes' && <AllNotes />}

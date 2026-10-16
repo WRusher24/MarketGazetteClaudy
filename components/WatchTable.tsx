@@ -7,15 +7,17 @@ import type { Quote } from '@/lib/types';
 import Icon from './Icon';
 import { useStore } from './Providers';
 
-export default function WatchTable({ editable = false }: { editable?: boolean }) {
-  const { watchlist, ready, removeSymbol } = useStore();
-  const url = watchlist.length ? `/api/quotes?symbols=${encodeURIComponent(watchlist.join(','))}` : null;
+/** Live prices for one watchlist, or for every watchlist when no list is given. */
+export default function WatchTable({ editable = false, listId }: { editable?: boolean; listId?: number }) {
+  const { lists, watchlist, ready, removeSymbol } = useStore();
+  const symbols = listId != null ? (lists.find((l) => l.id === listId)?.symbols ?? []) : watchlist;
+  const url = symbols.length ? `/api/quotes?symbols=${encodeURIComponent(symbols.join(','))}` : null;
   const { data, loading } = useApi<Quote[]>(url, 15000);
   const quotes = new Map((data ?? []).map((q) => [q.symbol, q]));
 
   if (!ready) return <div className="skeleton" style={{ height: 140 }} />;
-  if (!watchlist.length) {
-    return <p className="muted">Your watchlist is empty. Search for a ticker above and add it to see live prices here.</p>;
+  if (!symbols.length) {
+    return <p className="muted">This watchlist is empty. Search for a ticker above and add it to see live prices here.</p>;
   }
 
   return (
@@ -30,7 +32,7 @@ export default function WatchTable({ editable = false }: { editable?: boolean })
         </tr>
       </thead>
       <tbody>
-        {watchlist.map((s) => {
+        {symbols.map((s) => {
           const q = quotes.get(s);
           const t = trend(q?.changePct);
           return (
@@ -47,7 +49,12 @@ export default function WatchTable({ editable = false }: { editable?: boolean })
               </td>
               {editable && (
                 <td className="num">
-                  <button type="button" className="icon-btn" onClick={() => removeSymbol(s).catch(() => undefined)} aria-label={`Remove ${s}`}>
+                  <button
+                    type="button"
+                    className="icon-btn"
+                    onClick={() => removeSymbol(s, listId).catch(() => undefined)}
+                    aria-label={`Remove ${s}`}
+                  >
                     <Icon name="trash" size={16} />
                   </button>
                 </td>

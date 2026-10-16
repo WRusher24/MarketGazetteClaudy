@@ -72,14 +72,18 @@ If you change environment variables after deploying, redeploy for them to take e
 
 ## 3a. Scheduled jobs
 
-`vercel.json` registers two Vercel Cron jobs (Hobby plan: at most one run per job per day, timing may drift by up to an hour):
+`vercel.json` registers two Vercel Cron jobs (Hobby plan: at most one run per job per day, timing may drift by up to an hour). Both require `CRON_SECRET`, which Vercel sends as `Authorization: Bearer <CRON_SECRET>`.
 
 | Route | Schedule (UTC) | What it does |
 | --- | --- | --- |
-| `/api/cron/daily-briefing` | `0 11 * * *` (every day) | Writes today's Morning Edition from your watchlist, live quotes and news |
-| `/api/cron/weekly-briefing` | `0 14 * * 0` (Sundays) | Writes the Weekly Recap from 5-session moves and the week's headlines |
+| `/api/cron/daily-briefing` | `0 11 * * *` (every day) | Writes today's Morning Edition. On Sundays it also writes the Weekly Recap. |
+| `/api/cron/market-data` | `30 22 * * 1-5` (weekdays, after the US close) | Rebuilds the stock screener snapshot from Finnhub metrics and Yahoo price history. |
 
-Both need `CRON_SECRET`. Editions are saved in the Neon `briefings` table (one row per kind and date). You can also press **Regenerate** on the dashboard at any time (limited to one run per minute per edition). After changing `vercel.json`, redeploy so Vercel picks up the schedule.
+Editions are saved in the Neon `briefings` table and the screener in `market_snapshots` (one row per kind and date, or one row for the screener). You can also press **Regenerate** on the dashboard and **Refresh data** on the Screener page; each is limited (one minute and five minutes respectively). After changing `vercel.json`, redeploy so Vercel picks up the schedule.
+
+**Finnhub plan.** The Earnings calendar (`/calendar/earnings`) and insider trades (`/stock/insider-transactions`) endpoints were not verified against the free tier while this was built. If your Finnhub plan does not include them, those panels show "unavailable" with Finnhub's status code instead of empty data. Everything else uses endpoints the app already used (quote, profile, metrics, earnings, recommendations, company news) plus Yahoo Finance.
+
+**Watchlists migration.** On first start after this update, the old single watchlist is copied into a list called **Default** exactly once. The old `watchlist` table is kept, not deleted, and is no longer written.
 
 ## 4. Security notes
 
@@ -91,7 +95,9 @@ Both need `CRON_SECRET`. Editions are saved in the Neon `briefings` table (one r
 ## 5. Troubleshooting
 
 - **Empty news**: check `FINNHUB_API_KEY`; Yahoo RSS is used as a second source and the Neon cache as a fallback.
-- **Briefing errors** (`Unauthorized` or `CRON_SECRET is not set` in the logs): check `CRON_SECRET` in Vercel and redeploy.
+- **Scheduled job errors** (`Unauthorized` or `CRON_SECRET is not set` in the logs): check `CRON_SECRET` in Vercel and redeploy.
+- **Earnings or insider panels say unavailable**: your Finnhub plan may not include that endpoint (see section 3a).
+- **Screener shows gaps**: Finnhub allows 60 calls a minute; press Refresh data after a few minutes, or read the list of partly loaded symbols on the page.
 - **AI errors**: check `GEMINI_API_KEY` and that your key can use the configured model (set `GEMINI_MODEL`).
 - **Database errors**: confirm `DATABASE_URL` includes `sslmode=require` and the Neon project is not suspended.
 - **Free-tier limits**: Finnhub allows 60 calls/minute; responses are cached for 15-120 seconds to stay within it.

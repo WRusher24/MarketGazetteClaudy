@@ -33,3 +33,13 @@ export async function readJson<T = Record<string, unknown>>(req: Request): Promi
     throw new Error('Invalid JSON body');
   }
 }
+
+/** An error with the HTTP status it should return. Routes pass it to fail() so clients see the right code. */
+export class HttpError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+  ) {
+    super(message);
+  }
+}

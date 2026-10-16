@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState, type ReactNode } from 'react';
+import EarningsBanner from './EarningsBanner';
 import Icon, { type IconName } from './Icon';
 import ReaderDrawer from './ReaderDrawer';
 import SymbolSearch from './SymbolSearch';
@@ -15,6 +16,7 @@ const NAV: { href: string; label: string; short: string; icon: IconName }[] = [
   { href: '/feed', label: 'Gazette Feed', short: 'Gazette', icon: 'feed' },
   { href: '/newsroom', label: 'Newsroom', short: 'News', icon: 'newsroom' },
   { href: '/watchlist', label: 'Watchlist', short: 'Watch', icon: 'watchlist' },
+  { href: '/screener', label: 'Screener', short: 'Screen', icon: 'screener' },
   { href: '/analyst', label: 'AI Analyst', short: 'AI', icon: 'ai' },
   { href: '/settings', label: 'Settings', short: 'Settings', icon: 'settings' },
 ];
@@ -100,7 +102,10 @@ export default function Shell({ children }: { children: ReactNode }) {
           <ThemeSwitcher />
         </header>
         <Ticker />
-        <main className="content">{children}</main>
+        <main className="content">
+          <EarningsBanner />
+          {children}
+        </main>
       </div>
 
       <nav className="bottom-nav" aria-label="Mobile">

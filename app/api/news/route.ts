@@ -1,12 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { cleanSymbol, cleanSymbols, fail, ok } from '@/lib/http';
 import { getNews, type NewsScope } from '@/lib/news';
-import { query } from '@/lib/db';
-
-async function watchlistSymbols(): Promise<string[]> {
-  const rows = await query<{ symbol: string }>('SELECT symbol FROM watchlist ORDER BY added_at');
-  return rows.map((r) => r.symbol);
-}
+import { getWatchlistSymbols } from '@/lib/watchlist';
 
 export async function GET(req: NextRequest) {
   try {
@@ -23,7 +18,7 @@ export async function GET(req: NextRequest) {
 
     if (scope === 'watchlist') {
       const explicit = cleanSymbols(sp.get('symbols'));
-      const symbols = explicit.length ? explicit : await watchlistSymbols();
+      const symbols = explicit.length ? explicit : await getWatchlistSymbols();
       return ok(await getNews('watchlist', symbols, limit));
     }
     return fail('Invalid scope', 400);

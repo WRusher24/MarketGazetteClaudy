@@ -110,3 +110,9 @@ export interface SentimentRadar {
   sample: number;
   method: 'ai' | 'lexicon';
 }
+
+export interface WatchList {
+  id: number;
+  name: string;
+  symbols: string[];
+}

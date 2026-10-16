@@ -57,3 +57,36 @@ CREATE TABLE IF NOT EXISTS briefings (
   generated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (kind, edition_date)
 );
+
+CREATE TABLE IF NOT EXISTS watchlists (
+  id BIGSERIAL PRIMARY KEY,
+  name TEXT NOT NULL UNIQUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS watchlist_members (
+  list_id BIGINT NOT NULL REFERENCES watchlists (id) ON DELETE CASCADE,
+  symbol TEXT NOT NULL,
+  added_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (list_id, symbol)
+);
+
+-- One-time migration from the legacy watchlist table into a "Default" list (guarded by schema_migrations).
+CREATE TABLE IF NOT EXISTS schema_migrations (
+  name TEXT PRIMARY KEY,
+  applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+INSERT INTO watchlists (name)
+  SELECT 'Default' WHERE NOT EXISTS (SELECT 1 FROM schema_migrations WHERE name = 'watchlists_v1')
+  ON CONFLICT (name) DO NOTHING;
+INSERT INTO watchlist_members (list_id, symbol, added_at)
+  SELECT l.id, w.symbol, w.added_at FROM watchlist w CROSS JOIN watchlists l
+  WHERE l.name = 'Default' AND NOT EXISTS (SELECT 1 FROM schema_migrations WHERE name = 'watchlists_v1')
+  ON CONFLICT (list_id, symbol) DO NOTHING;
+INSERT INTO schema_migrations (name) VALUES ('watchlists_v1') ON CONFLICT (name) DO NOTHING;
+
+CREATE TABLE IF NOT EXISTS market_snapshots (
+  name TEXT PRIMARY KEY,
+  payload JSONB NOT NULL,
+  generated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

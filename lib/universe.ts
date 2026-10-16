@@ -15,6 +15,21 @@ export const SECTOR_ETFS: { symbol: string; label: string }[] = [
   { symbol: 'XLRE', label: 'Real Estate' },
 ];
 
+/** Sector names used by the popular-stock universe, in display order. */
+export const UNIVERSE_SECTORS = [
+  'Technology',
+  'Communication',
+  'Consumer Discretionary',
+  'Consumer Staples',
+  'Health Care',
+  'Financials',
+  'Energy',
+  'Industrials',
+  'Materials',
+  'Utilities',
+  'Real Estate',
+];
+
 export interface UniverseStock {
   symbol: string;
   sector: string;

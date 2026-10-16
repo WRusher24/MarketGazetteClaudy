@@ -3,8 +3,10 @@
 import { useApi } from '@/lib/client';
 import { fmtChange, fmtCompactUsd, fmtNumber, fmtPct, fmtPlainPct, fmtPrice, fmtVolume, trend } from '@/lib/format';
 import type { StockDetail } from '@/lib/types';
+import ActivityPanel from './ActivityPanel';
 import AnalystPanel from './AnalystPanel';
-import Icon from './Icon';
+import AskAnalyst from './AskAnalyst';
+import ListMembership from './ListMembership';
 import NewsSection from './NewsSection';
 import Notes from './Notes';
 import { useStore } from './Providers';
@@ -21,7 +23,7 @@ function Metric({ label, value }: { label: string; value: string }) {
 
 export default function StockView({ symbol }: { symbol: string }) {
   const { data: s, error, loading } = useApi<StockDetail>(`/api/stock/${encodeURIComponent(symbol)}`, 15000);
-  const { watchlist, addSymbol, removeSymbol } = useStore();
+  const { watchlist } = useStore();
   const watching = watchlist.includes(symbol);
   const t = trend(s?.changePct);
 
@@ -49,13 +51,7 @@ export default function StockView({ symbol }: { symbol: string }) {
           <span className={`chg ${t}`}>{fmtChange(s.change)}</span>
           <span className={`pill ${t}`}>{fmtPct(s.changePct)}</span>
         </div>
-        <button
-          type="button"
-          className={`btn ${watching ? 'btn-ghost' : ''}`}
-          onClick={() => (watching ? removeSymbol(symbol) : addSymbol(symbol)).catch(() => undefined)}
-        >
-          <Icon name={watching ? 'trash' : 'plus'} size={16} /> {watching ? 'Remove from watchlist' : 'Add to watchlist'}
-        </button>
+        <ListMembership symbol={symbol} />
       </header>
 
       <div className="stock-grid">
@@ -77,6 +73,8 @@ export default function StockView({ symbol }: { symbol: string }) {
             </div>
           </section>
           <AnalystPanel symbol={symbol} />
+          <AskAnalyst symbol={symbol} />
+          <ActivityPanel symbol={symbol} />
           <Notes symbol={symbol} />
         </div>
         <aside className="stock-news">

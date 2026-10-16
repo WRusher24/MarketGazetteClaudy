@@ -19,14 +19,15 @@ Your choice is remembered on that device.
 - **Dashboard**: the Morning Edition (or Weekly Recap) at the top, the Market Overview, the front-page lead, top headlines, watchlist news, the AI Sentiment Radar gauge and your live watchlist prices.
 - **Gazette Feed**: the full newspaper edition with Top Headlines and Watchlist News.
 - **Newsroom**: a live stream you can filter by text and source, switch between Top, Watchlist or any single ticker. It refreshes every minute.
-- **Watchlist**: add and remove tickers, open the **Saved Vault** (bookmarked articles and AI reports) and see all your **Notes**.
+- **Watchlist**: keep several named lists (for example Long-term, Ideas, Tech), add and remove tickers, see the **Earnings** dates for the list you are viewing, open the **Saved Vault** and see all your **Notes**.
+- **Screener**: filter stocks by sector, market cap, P/E and 3-month momentum.
 
 ## Morning Edition and Weekly Recap
 The top of the dashboard holds an AI-written edition for your watchlist:
 - **Daily** (the Morning Edition) gives a short lead on the day, up to five headlines with a line on why each matters, the biggest moves today and a paragraph on what to watch today.
 - **Weekly** (the Weekly Recap) covers the last five sessions, the biggest moves over that period, up to six headlines and what to watch next week.
 
-Editions are written automatically (daily around 11:00 UTC, weekly on Sunday around 14:00 UTC) and saved, so they are there when you open the app. Press **Regenerate** to write a fresh one; it can be run once a minute. Headline links always go to real articles. If a new edition fails, the last saved one stays on screen with a message. Editions are AI-generated and are not financial advice.
+Editions are written automatically (every day around 11:00 UTC; the Weekly Recap is written on Sundays at the same time) and saved, so they are there when you open the app. Press **Regenerate** to write a fresh one; it can be run once a minute. Headline links always go to real articles. If a new edition fails, the last saved one stays on screen with a message. Editions are AI-generated and are not financial advice.
 
 ## Market Overview
 Below the edition: the major indices, a sector heat map built from sector ETFs (darker tiles mean bigger moves), and the top gainers and losers among about forty large US stocks. If some quotes cannot be loaded you see how many are missing instead of a blank section.
@@ -36,15 +37,30 @@ Click any headline or card. A reading drawer opens (side panel on desktop, full 
 
 Click **Summarize with AI** for an AI Executive Summary: 3 key takeaways, impact on the stock price and market sentiment.
 
+## Watchlists
+- The **Watchlist** page shows one list at a time. Pick a list from the chips, or press **Create** to make a new one. Rename a list in the box beside it, or delete it with the bin icon (you must keep at least one list).
+- A ticker can sit in several lists. Add or remove it from any list on its stock page with the chips under the header (a tick means it is in that list).
+- Your existing tickers now live in a list called **Default**.
+- The dashboard watchlist table, watchlist news and the AI briefings use every ticker across all your lists.
+
+## Earnings calendar and reminders
+The **Earnings** card on the Watchlist page lists the next three weeks of earnings for the list you are viewing: date, timing (before the open or after the close), and the EPS and revenue estimates. Once a day-before reminder is due, a banner appears at the top of every page: "Earnings tomorrow". Press **Dismiss** to hide it for that company and date. Dates come from Finnhub and can change.
+
 ## Stock pages
 Click any ticker chip or watchlist symbol.
-- The header shows the live price and percentage change. Use **Add to watchlist** to track it.
+- The header shows the live price and percentage change. Use the **Watchlists** chips to add it to one or more lists.
 - Pick a timeframe (**1D, 1W, 1M, 1Y, ALL**) and a chart type (**Candles** or **Line**). Hover the chart to see open, high, low, close and volume.
+- Indicator chips switch on **MA 20**, **MA 50**, **Volume** (on by default) and **RSI 14** (shown in its own pane with 30 and 70 guide lines). Indicators are calculated from the bars shown in the selected timeframe, so a 1D chart uses 5-minute bars.
 - The Key Metrics grid shows market cap, P/E, 52-week high and low, volume and dividend yield.
 - The news panel beside the chart (below it on phones) lists headlines for that stock only. Clicking one opens the reader without leaving the page.
+- **Ask the Analyst** is a chat box. Ask about news, earnings, valuation or analyst views. Answers use live quotes, earnings, analyst ratings and headlines, and show the numbered sources they used (F = figure, H = headline, with links). The last few questions are sent along so follow-ups make sense. Clear starts a new conversation.
+- **Insider Trades & Analyst Ratings** lists recent insider transactions (purchases, sales, awards) and the months when the analyst consensus changed. The consensus changes are built from monthly trend data, so individual broker moves are not shown.
 - **My Notes** stores private notes per ticker.
 
 ## AI Analyst
 Press **Analyze Stock with AI** on a stock page, or choose a ticker on the **AI Analyst** page. You get a four-part brief: business model and revenue drivers, strengths versus risks, recent quarterly earnings, and market sentiment with analyst consensus. Press **Save report** to keep it in your vault. Reports are cached for six hours; **Regenerate** refreshes them.
 
-AI output and market data can be wrong or delayed. MarketGazette is for information only and is not investment advice.
+AI output and market data can be wrong or delayed. MarketGazette is for information only and is not investment advice. Every AI answer is labelled as AI-generated.
+
+## Stock Screener
+The **Screener** page filters a snapshot of about forty stocks: your watchlist tickers first, then popular large US stocks. Filter by sector, minimum market cap, maximum P/E (companies with negative earnings are excluded when you set a P/E limit) and minimum 3-month move. Sort by momentum, market cap, P/E or symbol. The snapshot is rebuilt each weekday after the US close; **Refresh data** rebuilds it on demand (about 45 seconds). Stocks that could not be fully loaded are listed under the table with the reason.
