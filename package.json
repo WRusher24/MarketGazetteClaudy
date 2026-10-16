@@ -1,0 +1,33 @@
+{
+  "name": "marketgazette",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MarketGazette - personal stock newspaper, in-app news reader, charting suite and AI analyst.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "db:migrate": "tsx --env-file=.env.local scripts/migrate.ts",
+    "db:seed": "tsx --env-file=.env.local scripts/seed.ts",
+    "db:setup": "npm run db:migrate && npm run db:seed"
+  },
+  "engines": {
+    "node": ">=20.6.0"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "0.10.4",
+    "fast-xml-parser": "4.5.0",
+    "lightweight-charts": "4.2.1",
+    "next": "14.2.15",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "20.16.11",
+    "@types/react": "18.3.11",
+    "@types/react-dom": "18.3.1",
+    "tsx": "4.19.1",
+    "typescript": "5.6.3"
+  }
+}
