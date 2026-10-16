@@ -91,4 +91,20 @@ export const SCHEMA_STATEMENTS: string[] = [
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
   )`,
   `CREATE INDEX IF NOT EXISTS holdings_symbol_idx ON holdings (symbol)`,
+  `ALTER TABLE bookmarks ADD COLUMN IF NOT EXISTS tags TEXT[] NOT NULL DEFAULT '{}'`,
+  `ALTER TABLE notes ADD COLUMN IF NOT EXISTS tags TEXT[] NOT NULL DEFAULT '{}'`,
+  `ALTER TABLE notes ADD COLUMN IF NOT EXISTS article_id TEXT`,
+  `ALTER TABLE notes ADD COLUMN IF NOT EXISTS article_title TEXT`,
+  `ALTER TABLE notes ADD COLUMN IF NOT EXISTS article_url TEXT`,
+  `CREATE INDEX IF NOT EXISTS notes_article_idx ON notes (article_id)`,
+  `CREATE TABLE IF NOT EXISTS highlights (
+    id BIGSERIAL PRIMARY KEY,
+    article_id TEXT NOT NULL,
+    article_title TEXT NOT NULL DEFAULT '',
+    article_url TEXT NOT NULL DEFAULT '',
+    symbol TEXT NOT NULL DEFAULT '',
+    body TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  )`,
+  `CREATE INDEX IF NOT EXISTS highlights_article_idx ON highlights (article_id)`,
 ];

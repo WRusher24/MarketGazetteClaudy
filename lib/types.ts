@@ -74,6 +74,7 @@ export interface Bookmark {
   body: string;
   symbol: string;
   savedAt: string;
+  tags: string[];
 }
 
 export interface Note {
@@ -82,6 +83,20 @@ export interface Note {
   body: string;
   createdAt: string;
   updatedAt: string;
+  tags: string[];
+  articleId: string | null;
+  articleTitle: string | null;
+  articleUrl: string | null;
+}
+
+export interface Highlight {
+  id: number;
+  articleId: string;
+  articleTitle: string;
+  articleUrl: string;
+  symbol: string;
+  body: string;
+  createdAt: string;
 }
 
 export type SentimentLabel = 'Bullish' | 'Bearish' | 'Neutral';

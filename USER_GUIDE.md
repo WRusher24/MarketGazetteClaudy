@@ -55,7 +55,9 @@ Click any ticker chip or watchlist symbol.
 - The news panel beside the chart (below it on phones) lists headlines for that stock only. Clicking one opens the reader without leaving the page.
 - **Ask the Analyst** is a chat box. Ask about news, earnings, valuation or analyst views. Answers use live quotes, earnings, analyst ratings and headlines, and show the numbered sources they used (F = figure, H = headline, with links). The last few questions are sent along so follow-ups make sense. Clear starts a new conversation.
 - **Insider Trades & Analyst Ratings** lists recent insider transactions (purchases, sales, awards) and the months when the analyst consensus changed. The consensus changes are built from monthly trend data, so individual broker moves are not shown.
-- **My Notes** stores private notes per ticker.
+- **My Notes** stores private notes per ticker. Notes can also be written about a story (see the reader below).
+- **Highlights**: in the reader, select a passage of the article text and press **Save highlight**. Highlights appear under the story and on the Watchlist page's Saved Vault tab.
+- **Thesis notes on a story**: at the bottom of the reader, pick a ticker and write what the story changes in your thesis. The note appears on that stock's page and in Notes, marked "re:" with the headline.
 
 ## AI Analyst
 Press **Analyze Stock with AI** on a stock page, or choose a ticker on the **AI Analyst** page. You get a four-part brief: business model and revenue drivers, strengths versus risks, recent quarterly earnings, and market sentiment with analyst consensus. Press **Save report** to keep it in your vault. Reports are cached for six hours; **Regenerate** refreshes them.
@@ -69,6 +71,11 @@ Open **Portfolio** (Wallet on phones) and add each purchase as a lot: ticker, sh
 - **Allocation**: share of value by sector or by position.
 - **Performance vs S&P 500**: your portfolio against the same money put into the S&P 500 on each purchase date. Lots without a purchase date cannot be placed in time, so they are left out of this chart.
 Tickers with no live price are listed and left out of the totals until a price loads.
+
+## Library: tags, search and export
+On the **Watchlist** page, the **Saved Vault** and **Notes** tabs have a search box and tag filters. Search matches every word you type across titles, summaries, sources, tickers, notes and highlights. Add tags to a saved item or note in its tag box (comma-separated; letters, numbers and hyphens, up to 10 tags), and press Enter or click away to save.
+
+**Export** (button on the Vault tab) produces one Markdown document with your saved articles and their highlights, AI reports, notes with their linked stories, and any other highlights. **Download Markdown** saves a `.md` file. **Print or save as PDF** uses your browser's print dialog; choose "Save as PDF" as the destination.
 
 ## Stock Screener
 The **Screener** page filters a snapshot of about forty stocks: your watchlist tickers first, then popular large US stocks. Filter by sector, minimum market cap, maximum P/E (companies with negative earnings are excluded when you set a P/E limit) and minimum 3-month move. Sort by momentum, market cap, P/E or symbol. The snapshot is rebuilt each weekday after the US close; **Refresh data** rebuilds it on demand (about 45 seconds). Stocks that could not be fully loaded are listed under the table with the reason.

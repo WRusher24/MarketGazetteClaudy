@@ -361,3 +361,20 @@ ul.plain, ul.notes, ul.vault, .search-results { list-style: none; padding: 0; }
 .alloc-head { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
 .alloc-track { height: 10px; border-radius: 999px; background: var(--panel-2); overflow: hidden; }
 .alloc-bar { height: 100%; border-radius: 999px; }
+
+/* reading library */
+.library-tools { display: flex; flex-direction: column; gap: 10px; }
+.tag-editor { display: flex; flex-direction: column; gap: 4px; margin: 6px 0; }
+.tag-editor .input { font-size: 0.9em; }
+.story-workbench { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px; }
+.highlight-bar { position: sticky; bottom: 8px; display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 8px 10px; border-radius: var(--radius); background: var(--panel-2); border: 1px solid var(--accent); }
+.highlight-list blockquote { margin: 0 0 4px; padding-left: 10px; border-left: 3px solid var(--accent); }
+.export-doc { white-space: pre-wrap; background: var(--panel-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; font-family: var(--font); font-size: 0.95em; max-height: 70vh; overflow: auto; }
+
+@media print {
+  .no-print, .sidebar, .topbar, .bottom-nav, .ticker, .earnings-banner { display: none !important; }
+  .app, .main { display: block; }
+  .content { padding: 0; max-width: none; }
+  body { background: #fff; color: #000; }
+  .export-doc { background: #fff; color: #000; border: 0; max-height: none; overflow: visible; font-family: Georgia, serif; font-size: 11pt; }
+}

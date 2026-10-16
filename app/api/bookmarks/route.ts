@@ -1,6 +1,7 @@
-﻿import type { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { query } from '@/lib/db';
 import { fail, ok, readJson } from '@/lib/http';
+import { parseTags } from '@/lib/library';
 import type { Bookmark } from '@/lib/types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -16,6 +17,7 @@ const toBookmark = (r: any): Bookmark => ({
   body: r.body,
   symbol: r.symbol,
   savedAt: new Date(r.saved_at).toISOString(),
+  tags: r.tags ?? [],
 });
 
 export const dynamic = 'force-dynamic';
@@ -53,6 +55,24 @@ export async function POST(req: Request) {
       ],
     );
     return ok(toBookmark(rows[0]));
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+/** Replaces the tags on a saved item. Tags are validated before they reach the database. */
+export async function PATCH(req: Request) {
+  try {
+    const b = await readJson<{ key?: string; tags?: unknown }>(req);
+    if (!b.key) return fail('key is required', 400);
+    let tags: string[];
+    try {
+      tags = parseTags(b.tags);
+    } catch (e) {
+      return fail(e, 400);
+    }
+    const rows = await query('UPDATE bookmarks SET tags = $2 WHERE ref_key = $1 RETURNING *', [String(b.key), tags]);
+    return rows[0] ? ok(toBookmark(rows[0])) : fail('Saved item not found', 404);
   } catch (e) {
     return fail(e);
   }

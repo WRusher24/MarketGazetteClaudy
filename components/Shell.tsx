@@ -72,7 +72,7 @@ export default function Shell({ children }: { children: ReactNode }) {
 
   return (
     <div className={`app ${collapsed ? 'is-collapsed' : ''}`}>
-      <aside className="sidebar" aria-label="Primary">
+      <aside className="sidebar no-print" aria-label="Primary">
         <div className="brand">
           <span className="brand-mark">MG</span>
           <span className="brand-name">MarketGazette</span>
@@ -102,14 +102,14 @@ export default function Shell({ children }: { children: ReactNode }) {
           <SymbolSearch />
           <ThemeSwitcher />
         </header>
-        <Ticker />
+        <div className="no-print"><Ticker /></div>
         <main className="content">
           <EarningsBanner />
           {children}
         </main>
       </div>
 
-      <nav className="bottom-nav" aria-label="Mobile">
+      <nav className="bottom-nav no-print" aria-label="Mobile">
         {NAV.map((n) => (
           <Link key={n.href} href={n.href} className={active(n.href) ? 'active' : ''}>
             <Icon name={n.icon} size={20} />

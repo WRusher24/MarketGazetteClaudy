@@ -33,8 +33,9 @@ interface StoreCtx {
   /** Removes from one list, or from every list when none is given. */
   removeSymbol: (symbol: string, listId?: number) => Promise<void>;
   isBookmarked: (key: string) => boolean;
-  saveBookmark: (b: Omit<Bookmark, 'id' | 'savedAt'>) => Promise<void>;
+  saveBookmark: (b: Omit<Bookmark, 'id' | 'savedAt' | 'tags'> & { tags?: string[] }) => Promise<void>;
   removeBookmark: (key: string) => Promise<void>;
+  setBookmarkTags: (key: string, tags: string[]) => Promise<void>;
 }
 interface ReaderCtx {
   article: Article | null;
@@ -158,9 +159,14 @@ export default function Providers({ children }: { children: ReactNode }) {
     [refreshLists],
   );
 
-  const saveBookmark = useCallback(async (b: Omit<Bookmark, 'id' | 'savedAt'>) => {
+  const saveBookmark = useCallback(async (b: Omit<Bookmark, 'id' | 'savedAt' | 'tags'> & { tags?: string[] }) => {
     const saved = await api<Bookmark>('/api/bookmarks', { method: 'POST', body: JSON.stringify(b) });
     setBookmarks((prev) => [saved, ...prev.filter((x) => x.key !== saved.key)]);
+  }, []);
+
+  const setBookmarkTags = useCallback(async (key: string, tags: string[]) => {
+    const updated = await api<Bookmark>('/api/bookmarks', { method: 'PATCH', body: JSON.stringify({ key, tags }) });
+    setBookmarks((prev) => prev.map((x) => (x.key === key ? updated : x)));
   }, []);
 
   const removeBookmark = useCallback(async (key: string) => {
@@ -185,8 +191,9 @@ export default function Providers({ children }: { children: ReactNode }) {
       isBookmarked: (key) => bookmarks.some((b) => b.key === key),
       saveBookmark,
       removeBookmark,
+      setBookmarkTags,
     }),
-    [lists, watchlist, bookmarks, ready, refreshLists, createList, renameList, deleteList, addSymbol, removeSymbol, saveBookmark, removeBookmark],
+    [lists, watchlist, bookmarks, ready, refreshLists, createList, renameList, deleteList, addSymbol, removeSymbol, saveBookmark, removeBookmark, setBookmarkTags],
   );
 
   const themeValue = useMemo(() => ({ theme, setTheme }), [theme, setTheme]);

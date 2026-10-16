@@ -8,6 +8,7 @@ import type { Article, ArticleSummary } from '@/lib/types';
 import Icon from './Icon';
 import { Cover } from './NewsCard';
 import { useReader, useStore } from './Providers';
+import StoryWorkbench from './StoryWorkbench';
 
 interface Body {
   paragraphs: string[];
@@ -27,9 +28,11 @@ function Reader({ article, onClose }: { article: Article; onClose: () => void })
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [selection, setSelection] = useState('');
 
   useEffect(() => {
     let alive = true;
+    setSelection('');
     setBody(null);
     setBodyLoading(true);
     setAi(null);
@@ -149,7 +152,7 @@ function Reader({ article, onClose }: { article: Article; onClose: () => void })
           )}
         </div>
 
-        <div className="article-text">
+        <div className="article-text" onMouseUp={() => setSelection(window.getSelection()?.toString().trim().slice(0, 2000) ?? '')} onKeyUp={() => setSelection(window.getSelection()?.toString().trim().slice(0, 2000) ?? '')}>
           {bodyLoading ? (
             <div className="skeleton" style={{ height: 160 }} />
           ) : paragraphs.length > 0 ? (
@@ -162,6 +165,8 @@ function Reader({ article, onClose }: { article: Article; onClose: () => void })
           )}
         </div>
         {saveError && <p className="error">{saveError}</p>}
+
+        <StoryWorkbench article={article} selection={selection} onSaved={() => setSelection('')} />
 
         <a className="btn btn-ghost" href={article.url} target="_blank" rel="noopener noreferrer">
           <Icon name="link" size={16} /> Open original article

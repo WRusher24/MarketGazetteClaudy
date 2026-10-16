@@ -59,6 +59,19 @@ export default function Notes({ symbol }: { symbol: string }) {
         {notes.map((n) => (
           <li key={n.id}>
             <p>{n.body}</p>
+            {n.articleTitle && (
+              <p className="muted small">
+                Re:{' '}
+                {n.articleUrl ? (
+                  <a href={n.articleUrl} target="_blank" rel="noopener noreferrer">
+                    {n.articleTitle}
+                  </a>
+                ) : (
+                  n.articleTitle
+                )}
+              </p>
+            )}
+            {n.tags.length > 0 && <p className="muted small">{n.tags.map((t) => `#${t}`).join(' ')}</p>}
             <div className="note-meta muted small">
               <span>{fmtDateTime(n.createdAt)}</span>
               <button type="button" className="icon-btn" onClick={() => remove(n.id)} aria-label="Delete note">
