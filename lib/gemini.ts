@@ -2,38 +2,74 @@ import { query } from './db';
 
 const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models';
 
+// Stay under the route's maxDuration (60s) so a slow first model still leaves room for the fallback.
+const TOTAL_BUDGET_MS = 55_000;
+const PER_ATTEMPT_MS = 30_000;
+
 function modelList(): string[] {
   const configured = process.env.GEMINI_MODEL;
   const defaults = ['gemini-3.8-flash', 'gemini-2.5-flash'];
   return configured ? [configured, ...defaults.filter((m) => m !== configured)] : defaults;
 }
 
-/** Calls Gemini and returns parsed JSON. Tries fallback models if one is unavailable. */
+/** Pulls Google's human-readable error message out of a failed response. */
+async function errorDetail(res: Response): Promise<string> {
+  try {
+    const body = await res.json();
+    const msg = body?.error?.message;
+    return typeof msg === 'string' ? msg.slice(0, 300) : '';
+  } catch {
+    return '';
+  }
+}
+
+/** Calls Gemini and returns parsed JSON. Tries fallback models if one is unavailable or rate limited. */
 export async function geminiJson<T>(prompt: string, temperature = 0.3): Promise<T> {
   const key = process.env.GEMINI_API_KEY;
   if (!key) throw new Error('GEMINI_API_KEY is not set');
 
+  const deadline = Date.now() + TOTAL_BUDGET_MS;
   let lastError = 'Gemini request failed';
+
   for (const model of modelList()) {
-    const res = await fetch(`${ENDPOINT}/${model}:generateContent`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
-      body: JSON.stringify({
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        generationConfig: { temperature, responseMimeType: 'application/json' },
-      }),
-      signal: AbortSignal.timeout(50000),
-    });
+    const remaining = deadline - Date.now();
+    if (remaining < 3000) break;
+
+    let res: Response;
+    try {
+      res = await fetch(`${ENDPOINT}/${model}:generateContent`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { temperature, responseMimeType: 'application/json' },
+        }),
+        signal: AbortSignal.timeout(Math.min(PER_ATTEMPT_MS, remaining)),
+      });
+    } catch (e) {
+      lastError = `Gemini ${model} did not respond in time (${e instanceof Error ? e.name : 'network error'})`;
+      continue;
+    }
+
     if (!res.ok) {
-      lastError = `Gemini ${model} responded ${res.status}`;
-      if (res.status === 404 || res.status === 400 || res.status === 503) continue;
+      const detail = await errorDetail(res);
+      lastError = `Gemini ${model} responded ${res.status}${detail ? `: ${detail}` : ''}`;
+
+      // A rejected key will fail on every model, so stop and say so instead of trying the next one.
+      const badKey = res.status === 401 || res.status === 403 || /api key/i.test(detail);
+      if (badKey) throw new Error(`Gemini rejected GEMINI_API_KEY. ${lastError}`);
+
+      // Model missing, bad request for this model, quota/rate limit (per-model), or server trouble: try the next model.
+      if ([400, 404, 429, 500, 503].includes(res.status)) continue;
       throw new Error(lastError);
     }
+
     const json = await res.json();
     const parts: { text?: string }[] = json?.candidates?.[0]?.content?.parts ?? [];
     const text = parts.map((p) => p.text ?? '').join('').trim();
     if (!text) {
-      lastError = `Gemini ${model} returned an empty response`;
+      const reason = json?.promptFeedback?.blockReason ?? json?.candidates?.[0]?.finishReason;
+      lastError = `Gemini ${model} returned an empty response${reason ? ` (${reason})` : ''}`;
       continue;
     }
     const unfenced = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');

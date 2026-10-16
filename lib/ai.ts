@@ -74,7 +74,7 @@ export function analyzeStock(symbol: string): Promise<AnalystReport> {
         `"sentiment": {"label": "Bullish|Bearish|Neutral", "consensus": "analyst consensus in one phrase based on recommendation trends", "summary": "2-3 sentences"}}`,
       0.4,
     );
-    return {
+    const report: AnalystReport = {
       symbol,
       generatedAt: new Date().toISOString(),
       businessModel: { summary: text(raw.businessModel?.summary), drivers: list(raw.businessModel?.drivers) },
@@ -89,5 +89,10 @@ export function analyzeStock(symbol: string): Promise<AnalystReport> {
         summary: text(raw.sentiment?.summary),
       },
     };
+    // Throwing here keeps an empty or wrongly shaped answer out of the 6-hour cache.
+    if (!report.businessModel.summary && !report.earnings.summary && !report.sentiment.summary) {
+      throw new Error('Gemini returned an unusable report. Try again.');
+    }
+    return report;
   });
 }
