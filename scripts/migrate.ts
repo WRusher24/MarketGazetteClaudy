@@ -2,7 +2,7 @@ import { ensureSchema } from '../lib/db';
 
 async function main() {
   await ensureSchema();
-  console.log('Migration complete: watchlist, bookmarks, notes, news_cache, ai_cache are ready.');
+  console.log('Migration complete: watchlist, bookmarks, notes, news_cache, ai_cache, briefings are ready.');
 }
 
 main().catch((err) => {

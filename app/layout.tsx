@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import Providers from '@/components/Providers';
 import Shell from '@/components/Shell';
+import { THEME_IDS } from '@/lib/themes';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { width: 'device-width', initialScale: 1 };
 
-const themeScript = `try{var t=localStorage.getItem('mg-theme');if(t!=='light'&&t!=='dark'&&t!=='terminal')t='dark';document.documentElement.setAttribute('data-theme',t)}catch(e){document.documentElement.setAttribute('data-theme','dark')}`;
+const themeScript = `try{var ids=${JSON.stringify(THEME_IDS)};var t=localStorage.getItem('mg-theme');if(ids.indexOf(t)<0)t='dark';document.documentElement.setAttribute('data-theme',t)}catch(e){document.documentElement.setAttribute('data-theme','dark')}`;
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (

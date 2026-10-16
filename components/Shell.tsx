@@ -8,6 +8,7 @@ import ReaderDrawer from './ReaderDrawer';
 import SymbolSearch from './SymbolSearch';
 import Ticker from './Ticker';
 import { THEMES, useTheme } from './Providers';
+import type { ThemeName } from '@/lib/themes';
 
 const NAV: { href: string; label: string; short: string; icon: IconName }[] = [
   { href: '/', label: 'Dashboard', short: 'Home', icon: 'dashboard' },
@@ -18,7 +19,7 @@ const NAV: { href: string; label: string; short: string; icon: IconName }[] = [
   { href: '/settings', label: 'Settings', short: 'Settings', icon: 'settings' },
 ];
 
-const THEME_ICON: Record<string, IconName> = { light: 'sun', dark: 'moon', terminal: 'terminal' };
+const THEME_ICON: Record<ThemeName, IconName> = { light: 'sun', dark: 'moon', black: 'contrast', terminal: 'terminal' };
 
 export function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();

@@ -43,4 +43,12 @@ export const SCHEMA_STATEMENTS: string[] = [
     payload JSONB NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
   )`,
+  `CREATE TABLE IF NOT EXISTS briefings (
+    id BIGSERIAL PRIMARY KEY,
+    kind TEXT NOT NULL CHECK (kind IN ('daily', 'weekly')),
+    edition_date DATE NOT NULL,
+    payload JSONB NOT NULL,
+    generated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (kind, edition_date)
+  )`,
 ];

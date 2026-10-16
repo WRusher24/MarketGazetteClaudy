@@ -2,12 +2,14 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { api } from '@/lib/client';
+import { isThemeName, type ThemeName } from '@/lib/themes';
 import type { Article, Bookmark } from '@/lib/types';
 
-export type ThemeName = 'light' | 'dark' | 'terminal';
+export type { ThemeName };
 export const THEMES: { id: ThemeName; label: string; blurb: string }[] = [
   { id: 'light', label: 'Minimalist Light', blurb: 'Paper-white, high contrast, ocean-blue accents.' },
   { id: 'dark', label: 'Sleek Dark', blurb: 'Deep slate with emerald gains and crimson losses.' },
+  { id: 'black', label: 'Off-Black', blurb: 'True black with soft grey panels and muted gains and losses.' },
   { id: 'terminal', label: 'Bloomberg Terminal', blurb: 'Black, amber headers, dense data tables.' },
 ];
 
@@ -52,7 +54,7 @@ export default function Providers({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const current = document.documentElement.getAttribute('data-theme');
-    if (current === 'light' || current === 'dark' || current === 'terminal') setThemeState(current);
+    if (isThemeName(current)) setThemeState(current);
   }, []);
 
   const setTheme = useCallback((t: ThemeName) => {

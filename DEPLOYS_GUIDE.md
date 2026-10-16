@@ -28,7 +28,9 @@ Start the dev server and open http://localhost:3000:
 npm run dev
 ```
 
-Other commands: `npm run typecheck`, `npm run build`, `npm run start`, `npm run db:migrate`, `npm run db:seed`.
+Other commands: `npm run typecheck`, `npm test`, `npm run build`, `npm run start`, `npm run db:migrate`, `npm run db:seed`.
+
+For local testing of the scheduled jobs, add `CRON_SECRET` to `.env.local` and call `curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron/daily-briefing`.
 
 The app also creates any missing tables on first request (`CREATE TABLE IF NOT EXISTS`), so a fresh Neon database works even if you skip `db:migrate`.
 
@@ -58,22 +60,38 @@ If `git remote -v` shows nothing, run `git remote add origin https://github.com/
 | `FINNHUB_API_KEY` | your Finnhub key |
 | `GEMINI_API_KEY` | your Gemini key |
 | `DATABASE_URL` | your Neon connection string (use the pooled one, `sslmode=require`) |
+| `CRON_SECRET` | a long random string (for example `openssl rand -hex 32`). Vercel Cron sends it to the scheduled jobs; the jobs refuse requests without it |
 
 Optional: `GEMINI_MODEL` to override the default `gemini-3.8-flash`.
+
+Add `CRON_SECRET` before the first deploy. Without it the scheduled briefings fail with a clear error in the Vercel logs.
 
 5. Click **Deploy**. Every later push to `main` redeploys automatically.
 
 If you change environment variables after deploying, redeploy for them to take effect.
 
+## 3a. Scheduled jobs
+
+`vercel.json` registers two Vercel Cron jobs (Hobby plan: at most one run per job per day, timing may drift by up to an hour):
+
+| Route | Schedule (UTC) | What it does |
+| --- | --- | --- |
+| `/api/cron/daily-briefing` | `0 11 * * *` (every day) | Writes today's Morning Edition from your watchlist, live quotes and news |
+| `/api/cron/weekly-briefing` | `0 14 * * 0` (Sundays) | Writes the Weekly Recap from 5-session moves and the week's headlines |
+
+Both need `CRON_SECRET`. Editions are saved in the Neon `briefings` table (one row per kind and date). You can also press **Regenerate** on the dashboard at any time (limited to one run per minute per edition). After changing `vercel.json`, redeploy so Vercel picks up the schedule.
+
 ## 4. Security notes
 
 - `.env.local` is git-ignored. Only `.env.example` (no secrets) is committed.
 - **Rotate keys that have been shared in chat or tickets.** Regenerate the Finnhub key, Gemini key and Neon password if they were exposed anywhere, then update `.env.local` and Vercel.
+- `CRON_SECRET` protects the scheduled routes only. The rest of the app has no login.
 - MarketGazette is a single-user app with no login. Anyone who knows the deployed URL can read and change the watchlist, vault and notes, and can trigger Gemini calls on your quota. Keep the URL private, or enable Vercel Deployment Protection (Project Settings, Deployment Protection) before sharing it.
 
 ## 5. Troubleshooting
 
 - **Empty news**: check `FINNHUB_API_KEY`; Yahoo RSS is used as a second source and the Neon cache as a fallback.
+- **Briefing errors** (`Unauthorized` or `CRON_SECRET is not set` in the logs): check `CRON_SECRET` in Vercel and redeploy.
 - **AI errors**: check `GEMINI_API_KEY` and that your key can use the configured model (set `GEMINI_MODEL`).
 - **Database errors**: confirm `DATABASE_URL` includes `sslmode=require` and the Neon project is not suspended.
 - **Free-tier limits**: Finnhub allows 60 calls/minute; responses are cached for 15-120 seconds to stay within it.

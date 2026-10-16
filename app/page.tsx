@@ -1,4 +1,6 @@
+import BriefingPanel from '@/components/BriefingPanel';
 import LeadStory from '@/components/LeadStory';
+import MarketOverview from '@/components/MarketOverview';
 import NewsSection from '@/components/NewsSection';
 import SentimentGauge from '@/components/SentimentGauge';
 import WatchTable from '@/components/WatchTable';
@@ -9,6 +11,8 @@ export default function DashboardPage() {
       <h1 className="page-title">My Market Gazette</h1>
       <div className="dash-grid">
         <div className="stack">
+          <BriefingPanel />
+          <MarketOverview />
           <LeadStory />
           <NewsSection title="Top Headlines" url="/api/news?scope=top" variant="row" limit={8} skip={1} />
           <NewsSection
