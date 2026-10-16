@@ -350,3 +350,14 @@ ul.plain, ul.notes, ul.vault, .search-results { list-style: none; padding: 0; }
 /* indicators */
 .indicator-toggles { margin: 4px 0 8px; }
 .rsi-host { height: 120px; margin-top: 6px; }
+
+/* portfolio */
+.holding-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; align-items: end; }
+.holding-form label { display: flex; flex-direction: column; gap: 4px; }
+.holding-form .input { width: 100%; }
+.holding-form .btn { justify-self: start; }
+.holding-form .error { grid-column: 1 / -1; margin: 0; }
+.alloc { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.alloc-head { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+.alloc-track { height: 10px; border-radius: 999px; background: var(--panel-2); overflow: hidden; }
+.alloc-bar { height: 100%; border-radius: 999px; }

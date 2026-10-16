@@ -90,3 +90,13 @@ CREATE TABLE IF NOT EXISTS market_snapshots (
   payload JSONB NOT NULL,
   generated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+CREATE TABLE IF NOT EXISTS holdings (
+  id BIGSERIAL PRIMARY KEY,
+  symbol TEXT NOT NULL,
+  shares DOUBLE PRECISION NOT NULL CHECK (shares > 0),
+  cost_per_share DOUBLE PRECISION NOT NULL CHECK (cost_per_share >= 0),
+  acquired_on DATE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS holdings_symbol_idx ON holdings (symbol);

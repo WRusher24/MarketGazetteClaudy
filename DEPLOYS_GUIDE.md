@@ -83,6 +83,8 @@ Editions are saved in the Neon `briefings` table and the screener in `market_sna
 
 **Finnhub plan.** The Earnings calendar (`/calendar/earnings`) and insider trades (`/stock/insider-transactions`) endpoints were not verified against the free tier while this was built. If your Finnhub plan does not include them, those panels show "unavailable" with Finnhub's status code instead of empty data. Everything else uses endpoints the app already used (quote, profile, metrics, earnings, recommendations, company news) plus Yahoo Finance.
 
+**Portfolio data.** Holdings are stored in the new Neon `holdings` table. Performance history uses Yahoo Finance five-year daily prices and is cached for an hour.
+
 **Watchlists migration.** On first start after this update, the old single watchlist is copied into a list called **Default** exactly once. The old `watchlist` table is kept, not deleted, and is no longer written.
 
 ## 4. Security notes

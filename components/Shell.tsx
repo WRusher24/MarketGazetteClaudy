@@ -17,6 +17,7 @@ const NAV: { href: string; label: string; short: string; icon: IconName }[] = [
   { href: '/newsroom', label: 'Newsroom', short: 'News', icon: 'newsroom' },
   { href: '/watchlist', label: 'Watchlist', short: 'Watch', icon: 'watchlist' },
   { href: '/screener', label: 'Screener', short: 'Screen', icon: 'screener' },
+  { href: '/portfolio', label: 'Portfolio', short: 'Wallet', icon: 'wallet' },
   { href: '/analyst', label: 'AI Analyst', short: 'AI', icon: 'ai' },
   { href: '/settings', label: 'Settings', short: 'Settings', icon: 'settings' },
 ];

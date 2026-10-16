@@ -62,5 +62,13 @@ Press **Analyze Stock with AI** on a stock page, or choose a ticker on the **AI 
 
 AI output and market data can be wrong or delayed. MarketGazette is for information only and is not investment advice. Every AI answer is labelled as AI-generated.
 
+## Portfolio
+Open **Portfolio** (Wallet on phones) and add each purchase as a lot: ticker, shares, cost per share and, optionally, the purchase date. Your data stays in this app's database; nothing is connected to a broker.
+- **Summary**: market value, cost basis, total gain or loss, and today's change, using live quotes.
+- **Positions**: each ticker combined from its lots, with average cost and gain or loss.
+- **Allocation**: share of value by sector or by position.
+- **Performance vs S&P 500**: your portfolio against the same money put into the S&P 500 on each purchase date. Lots without a purchase date cannot be placed in time, so they are left out of this chart.
+Tickers with no live price are listed and left out of the totals until a price loads.
+
 ## Stock Screener
 The **Screener** page filters a snapshot of about forty stocks: your watchlist tickers first, then popular large US stocks. Filter by sector, minimum market cap, maximum P/E (companies with negative earnings are excluded when you set a P/E limit) and minimum 3-month move. Sort by momentum, market cap, P/E or symbol. The snapshot is rebuilt each weekday after the US close; **Refresh data** rebuilds it on demand (about 45 seconds). Stocks that could not be fully loaded are listed under the table with the reason.
