@@ -32,9 +32,23 @@ Other commands: `npm run typecheck`, `npm run build`, `npm run start`, `npm run 
 
 The app also creates any missing tables on first request (`CREATE TABLE IF NOT EXISTS`), so a fresh Neon database works even if you skip `db:migrate`.
 
-## 2. Deploy to Vercel
+## 2. Push to GitHub (from the zip)
 
-1. Push this repo to https://github.com/WRusher24/MarketGazetteClaudy (branch `main`).
+If you received this project as `MarketGazette.zip`, it already contains a local git commit on `main` and your `.env.local`. On the new PC install Node.js 20+ and Git, unzip, then run:
+
+```bash
+npm install
+npm run db:setup
+npm run dev
+git remote -v
+git push -u origin main
+```
+
+If `git remote -v` shows nothing, run `git remote add origin https://github.com/WRusher24/MarketGazetteClaudy` first. Git will ask you to sign in to GitHub (browser or personal access token). `.env.local` is git-ignored and is never pushed. If the zip has no `.git` folder, run `git init -b main`, `git add .`, `git commit -m "feat: complete MarketGazette production platform build"` and then the remote and push commands above. Delete `.env.local` from the zip if it will be shared with anyone else.
+
+## 3. Deploy to Vercel
+
+1. Make sure the repo is pushed to https://github.com/WRusher24/MarketGazetteClaudy (branch `main`).
 2. Go to https://vercel.com/new and import `WRusher24/MarketGazetteClaudy`.
 3. Framework preset: **Next.js** (auto-detected). Leave build and output settings at their defaults.
 4. Under **Environment Variables**, add all three (Production, Preview and Development):
